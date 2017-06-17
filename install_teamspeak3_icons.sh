@@ -41,3 +41,5 @@ if [ -d $HICOLOR/64x64/apps ]; then
 	echo "Moving 64x64 photo."
 	cp 64x64/* $HICOLOR/64x64/apps/
 fi
+
+gtk-update-icon-cache -f /usr/share/icons/hicolor/
