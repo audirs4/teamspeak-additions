@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Name=TeamSpeak 3
+Type=Application
+Icon=teamspeak3
+Exec=/opt/teamspeak3_client/ts3client_runscript.sh
+StartupNotify=true

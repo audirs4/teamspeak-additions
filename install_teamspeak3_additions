@@ -1,0 +1,99 @@
+#!/bin/bash
+
+function copyIcon ()
+{
+	SIZE=$1
+	THEME=$2
+
+	#if [ -d $THEME/$SIZE/apps ]; then
+		echo "Moving $SIZE photo to $THEME/$SIZE/apps/"
+		install -Dm 664 $SIZE/teamspeak3.png $THEME/$SIZE/apps/teamspeak3.png
+	#fi
+}
+
+function copyIconSudo ()
+{
+	SIZE=$1
+	THEME=$2
+	PASSWD=$3
+
+	if [ -d $THEME/$SIZE/apps ]; then
+		echo "Moving $SIZE photo to $THEME/$SIZE/apps/"
+		echo -e $PASSWD | sudo -S install -Dm 664 $SIZE/teamspeak3.png $THEME/$SIZE/apps/teamspeak3.png
+	fi
+}
+
+LAUNCHER=0
+
+zenity --info --title="Welcome" --height=200 \
+	--text="Welcome to the TeamSpeak 3 Post Installation setup.\n\n \
+	This guide will step you through launcher and icon installation for TeamSpeak 3."
+
+zenity --question \
+	--text="Do you want to install the launcher?"
+
+if [ $? -eq 0 ]
+then
+	LAUNCHER=1
+	TMP=$(zenity --list --text "Choose where to install the launcher:" \
+		--width=500 --height=200 \
+		--title="Choose launcher location" \
+		--column="Location" --column="Directory Path" --column="Requires Root" \
+		"System" "/usr/share/applications/" "Yes" \
+		"Home" "~/.local/share/applications/" "No")
+
+	# Install Launcher to selected location
+
+	if [ $? -eq 0 ] && [ $TMP = "System" ]; then
+	#if [ $? = "System" ]; then
+
+		# Run installer for system launcher install
+
+		PASSWD="$(zenity --password --title="Authenticate" --timeout=10)\n"
+		echo -e $PASSWD | sudo -S desktop-file-install launcher/teamspeak3.desktop
+	else
+		cp launcher/teamspeak3.desktop ~/.local/share/applications/teamspeak3.desktop
+	fi
+fi
+
+zenity --question \
+	--text="Do you want to install the icons?"
+
+if [ $? -eq 0 ]; then
+
+	TMP=$(zenity --list --text "Choose where to install the icons:" \
+		--width=500 --height=200 \
+		--title="Choose icons location" \
+		--column="Location" --column="Directory Path" --column="Requires Root" \
+		"System" "/usr/share/icons/" "Yes" \
+		"Home" "~/.local/share/icons/" "No")
+
+	if [ $? -eq 0 ]; then
+		echo "Something was selected"
+
+		# Create array of each icon size to be moved
+		declare -a arr=("16x16" "22x22" "24x24" "32x32" "48x48" "64x64")
+
+		if [ $TMP = "System" ]; then
+
+			HICOLOR="/usr/share/icons/hicolor"
+
+			for i in "${arr[@]}"
+			do
+				copyIconSudo $i $HICOLOR $PASSWD
+			done
+		else
+			HICOLOR="$HOME/.local/share/icons/hicolor"
+			for i in "${arr[@]}"
+			do
+				copyIcon $i $HICOLOR
+			done
+		fi
+
+		if [ $LAUNCHER -ne 1 ]; then
+			PASSWD="$(zenity --password --title="Authenticate" --timeout=10)\n"
+		fi
+
+		echo -e $PASSWD | sudo -S gtk-update-icon-cache -f /usr/share/icons/hicolor/
+	fi
+fi
