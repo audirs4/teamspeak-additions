@@ -6,3 +6,4 @@ Type=Application
 Icon=teamspeak3
 Exec=/opt/teamspeak3_client/ts3client_runscript.sh
 StartupNotify=true
+StartupWMClass=TeamSpeak 3
