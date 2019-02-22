@@ -72,7 +72,7 @@ if [ $? -eq 0 ]; then
 		echo "Something was selected"
 
 		# Create array of each icon size to be moved
-		declare -a arr=("16x16" "22x22" "24x24" "32x32" "48x48" "64x64")
+		declare -a arr=("16x16" "22x22" "24x24" "32x32" "48x48" "64x64" "72x72" "96x96")
 
 		if [ $TMP = "System" ]; then
 
